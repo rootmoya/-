@@ -1,27 +1,30 @@
 #include<iostream>
 #include<string>
+#include<vector>
+#include<iomanip>  //æ ¼å¼åŒ–è¾“å‡ºè¾“å…¥
+#include<fstream>   //æ–‡ä»¶çš„è¾“å…¥ï¼Œè¾“å‡ºæµ
 using namespace std;
 
-//Í¼ÊéÀà 
+//å›¾ä¹¦ç±» 
 class Book
 {
 	public:
-		int flag;//½è³öÎª0
-		int Kind;//Í¼ÊéµÄÀàĞÍ 0-Ö½ÖÊÍ¼Êé  1-µç×ÓÍ¼Êé  2-¹âµú
+		int flag;//å€Ÿå‡ºä¸º0
+		int Kind;//å›¾ä¹¦çš„ç±»å‹ 0-çº¸è´¨å›¾ä¹¦  1-ç”µå­å›¾ä¹¦  2-å…‰ç¢Ÿ
 		Book()
         {
             flag=1;
 			Kind=0;
         }
-		virtual void Revise(string,string,long,float,int);         //ĞŞ¸Ä 
+		virtual void Revise(string,string,long,float,int);         //ä¿®æ”¹ 
 		virtual void Revise(string,string,float,int);
-		virtual void Display();//ÏÔÊ¾ĞÅÏ¢ 
+		virtual void Display();//æ˜¾ç¤ºä¿¡æ¯ 
 		virtual string GetName();
 		string GetPublisher();
 		long GetIsbn();
 		virtual float GetPrice();
 		int GetPage();
-		//ĞŞ¸ÄÊ±Ê¹ÓÃ
+		//ä¿®æ”¹æ—¶ä½¿ç”¨
 		void setIsbn(long is);
 		virtual void setPage(int pa);
 		virtual void setPrice(float pr);
@@ -33,21 +36,30 @@ class Book
 		float price;
 		int page;
 };
-
-//Ñ§ÉúÀà 
+//å­¦ç”Ÿç±» 
 class Student
 {
 	public:
-		Student();
-		void Borrow(Book bo[]);//½èÊé 
+		Student(string name,long id,string sex)
+		{
+			this->name=name;
+			this->id=id;
+			this->sex=sex;
+		}
+		void Borrow(Book bo[]);//å€Ÿä¹¦ 
 		void Displ();
+		long GetId()
+		{
+			return id;
+		}
+		void Revise(string,string,long);
 	private:
 		string name;
-		long id;	
+		long id;
+		string sex;	
 	//	Book bo[100];	
 };
-
-//Í¼Êé×ÊÔ´¹ÜÀíÀà
+//å›¾ä¹¦èµ„æºç®¡ç†ç±»
 class BookManger
 {
 	public:
@@ -59,35 +71,223 @@ class BookManger
 				delete bo[i];
 			}
 		}
-		void addBook();   //Ìí¼Ó
-		void delBook();   //É¾³ı
-		void findBook();  //²é¿´
-		void reBook();     //ĞŞ¸Ä
-		void showBook();   //ÏÔÊ¾
+		void addBook();   //æ·»åŠ 
+		void delBook();   //åˆ é™¤
+		void findBook();  //æŸ¥çœ‹
+		void reBook();     //ä¿®æ”¹
+		void showBook();   //æ˜¾ç¤º
 	private:
 		Book *bo[100];
-		int Number;         //¼ÇÂ¼Í¼ÊéµÄ±¾Êé
-	//Í¼ÊéµÄÔö,É¾,¸Ä,²éµÈ·½·¨
-	//ĞèÒª¶ÔBookÀà¶ÔÏó³ÖĞø»¯´¦Àí
+		int Number;         //è®°å½•å›¾ä¹¦çš„æœ¬ä¹¦
+	//å›¾ä¹¦çš„å¢,åˆ ,æ”¹,æŸ¥ç­‰æ–¹æ³•
+	//éœ€è¦å¯¹Bookç±»å¯¹è±¡æŒç»­åŒ–å¤„ç†
 };
-
-//Ñ§Éú¹ÜÀíÀà
+vector<Student>stus;
+vector<Student>::iterator it;
+//å­¦ç”Ÿç®¡ç†ç±»
 class StudentManger
 {
 	public:
-		StudentManger();
-		void addStudent(); //Ìí¼ÓÑ§Éú
-		void delStudent(); //É¾³ıÑ§Éú
-		void findStudent(); //²é¿´Ñ§Éú
-		void reStudent();  //ĞŞ¸ÄÑ§Éú
-		void showStuent(); //ÏÔÊ¾ËùÓĞÑ§Éú
+		 ~StudentManger()
+		 {
+			stus.clear();
+		 }
+		void addStudent(); //æ·»åŠ å­¦ç”Ÿ
+		void delStudent(); //åˆ é™¤å­¦ç”Ÿ
+		void findStudent(); //æŸ¥çœ‹å­¦ç”Ÿ
+		void reStudent();  //ä¿®æ”¹å­¦ç”Ÿ
+		void showStuent(); //æ˜¾ç¤ºæ‰€æœ‰å­¦ç”Ÿ
 	private:
-		Student stu[100];
-	//Ñ§ÉúµÄÔö,É¾,¸Ä,²éµÈ·½·¨
-	//ĞèÒª¶ÔStudentÀà¶ÔÏó³ÖĞø»¯´¦Àí
+		int n;
+	//	Student stu[100];
+	//å­¦ç”Ÿçš„å¢,åˆ ,æ”¹,æŸ¥ç­‰æ–¹æ³•
+	//éœ€è¦å¯¹Studentç±»å¯¹è±¡æŒç»­åŒ–å¤„ç†
 };
+// vector<Student>stus;
+// vector<Student>::iterator it;
+// void Add() 
+// {
+// 	char name,sex;
+// 	char h;
+// 	int id;
+// 	int s=0,i=1;
+// 	char t;
+// 	ifstream in("student.txt",ios::in);
+// 	if(!in){
+// 		cout <<"ä¸èƒ½æ‰“å¼€è¾“å…¥æ–‡ä»¶:\n";
+// 	}
+// 	while(in>>t)
+// 	{	
+// 		//for(int i=1;i<=3;i++)
+// 		//{
+// 			if(t==':' && i==1)
+// 			{
+// 				in>>t;
+// 				name=t;
+// 				i=2;
+// 		//		cout<<name<<endl;
+// 				s=1;
+// 			//	cout<<"    "<<t<<endl;
+// 			}
+// 			if(t==':' && i==2)
+// 			{
+// 				in>>t;
+// 				id=t-48;
+// 				i=3;
+// 			//	cout<<id<<endl;
+// 			//	cout<<t<<endl;
+// 			}
+// 			if(t==':' && i==3)
+// 			{
+// 				in>>t;
+// 				sex=t;
+// 				i=1;
+// 			//	cout<<sex<<endl;
+// 			//	cout<<t<<endl;
+// 			}
+// 			if(s==1)
+// 			{
+// 			Student stu(name,id,sex);
+// 			stus.push_back(stu);
+// 		//	}	
+// 		}
+	
 
-//ÓÉÍ¼Êé»ùÀàÅÉÉúµÄµç×ÓÀàÍ¼Êé
+		
+// 	}
+// 	cout<<"\n";
+// 	in.close();
+
+// }
+
+void StudentManger::addStudent()
+{
+	string name,sex;
+	long id;
+	int num;
+	ofstream ofile("student.txt",ios::app);
+	cout<<setw(10)<<cout.fill('-')<<"æ·»åŠ å­¦ç”Ÿä¿¡æ¯ç³»ç»Ÿ"<<setw(10)<<cout.fill('-')<<endl;
+	cout<<"è¯·è¾“å…¥æ·»åŠ äººæ•°:"<<endl;
+	cin>>num;
+	for(int i=1;i<=num;i++)
+	{
+		cout<<"è¯·è¾“å…¥ç¬¬"<<i<<"åå­¦ç”Ÿåå­—,å­¦å·,æ€§åˆ«:"<<endl;
+		cin>>name>>id>>sex;
+		Student stu(name,id,sex);
+		stus.push_back(stu);
+		
+		if(!ofile.fail())
+		{
+			ofile<<"å§“å:"<<name<<"    "<<"id:"<<id<<"    "<<"æ€§åˆ«:"<<sex<<"\r\n";
+		}
+		else
+		cout<<"open fail" <<endl;
+	}
+	ofile.close();
+	cout<<"æ·»åŠ æˆåŠŸ!"<<endl;
+	system("pause");
+    system("cls");
+}
+void StudentManger::delStudent()
+{
+	long id;string ans;
+	cout<<setw(10)<<cout.fill('-')<<"åˆ é™¤å­¦ç”Ÿä¿¡æ¯ç³»ç»Ÿ"<<setw(10)<<cout.fill('-')<<endl;
+	cout<<"è¯·è¾“å…¥é¢„åˆ é™¤å­¦ç”Ÿçš„å­¦å·:"<<endl;
+	cin>>id;
+	for(it=stus.begin();it!=stus.end();it++)
+	{
+		if((*it).GetId()==id)
+		{
+			cout<<"æ˜¯å¦ç»§ç»­åˆ é™¤(y/n)"<<endl;
+			cin>>ans;
+			if(ans=="y")
+			stus.erase(it);
+			cout<<"åˆ é™¤æˆåŠŸ!"<<endl;
+			break;
+		}
+	}
+	system("pause");
+    system("cls");
+}
+void StudentManger::findStudent()
+{
+	long id;
+	cout<<setw(10)<<cout.fill('-')<<"æŸ¥æ‰¾å­¦ç”Ÿä¿¡æ¯ç³»ç»Ÿ"<<setw(10)<<cout.fill('-')<<endl;
+	cout<<"è¯·è¾“å…¥é¢„æŸ¥æ‰¾å­¦ç”Ÿçš„å­¦å·:"<<endl;
+	cin>>id;
+	for(it=stus.begin();it!=stus.end();it++)
+	{
+		if((*it).GetId()==id)
+		{
+			cout<<"æŸ¥æ‰¾æˆåŠŸ"<<endl;
+			(*it).Displ();
+			break;
+		}
+	}
+	system("pause");
+    system("cls");
+}
+void StudentManger::reStudent()	
+{
+	long id;string name,sex;
+	cout<<setw(10)<<cout.fill('-')<<"ä¿®æ”¹å­¦ç”Ÿä¿¡æ¯ç³»ç»Ÿ"<<setw(10)<<cout.fill('-')<<endl;
+	cout<<"è¯·è¾“å…¥é¢„æŸ¥æ‰¾å­¦ç”Ÿçš„å­¦å·:"<<endl;
+	cin>>id;
+	ofstream ofile("student.txt",ios::app);
+	for(it=stus.begin();it!=stus.end();it++)
+	{
+		if((*it).GetId()==id)
+		{
+			cout<<"è¯·è¾“å…¥ä¿®æ”¹ä¿¡æ¯:"<<endl;
+			cin>>name>>sex>>id;
+			(*it).Revise(name,sex,id);
+			cout<<"ä¿®æ”¹æˆåŠŸ!"<<endl;
+			break;
+		}
+	}
+	system("pause");
+    system("cls");
+}
+void StudentManger::showStuent()
+{
+	string t;
+	int a=1,k;
+	cout<<setw(10)<<cout.fill('-')<<"å­¦ç”Ÿä¿¡æ¯ç³»ç»Ÿ"<<setw(10)<<cout.fill('-')<<endl;
+	cout<<"é€‰æ‹©åŠŸèƒ½:"<<endl;
+	cout<<"ã€0ã€‘æŸ¥çœ‹å·²æœ‰çš„å­¦ç”Ÿä¿¡æ¯"<<endl;
+	cout<<"ã€1ã€‘æŸ¥çœ‹æ–°å¢å­¦ç”Ÿä¿¡æ¯"<<endl;
+	cin>>k;
+	if(k==0)
+	{
+		ifstream in("student.txt",ios::in);
+		if(!in)
+		{
+			cout <<"ä¸èƒ½æ‰“å¼€è¾“å…¥æ–‡ä»¶:\n";
+		}
+		while(in>>t)
+		{
+			cout<<"  "<<t;
+			if(a%3==0)
+			cout<<"\n";
+			a++;
+		}
+		in.close();
+	}
+	if(k==1)
+	{
+		for(it=stus.begin();it!=stus.end();it++)
+		{
+		(*it).Displ();
+		}
+	cout<<"\n";
+	}
+
+	system("pause");
+    system("cls");
+		
+}
+//class Ebook
+//ç”±å›¾ä¹¦åŸºç±»æ´¾ç”Ÿçš„ç”µå­ç±»å›¾ä¹¦
 class EBook:public Book
 {
 	private:
@@ -119,8 +319,8 @@ void EBook::Revise(string na,string pul,float pr,int pa)
 // float EBook::GetPrice()
 void EBook::Display()
 {
-	cout<<"µç×ÓÀà"<<endl;
-    cout<<"ÊéÃû:"<<name<<'\n'<<"×÷Õß:"<<writer<<"\n"<<"¼Û¸ñ:"<<price<<"\n"<<"Ò³Êı"<<page<<endl;
+	cout<<"ç”µå­ç±»"<<endl;
+    cout<<"ä¹¦å:"<<name<<'\n'<<"ä½œè€…:"<<writer<<"\n"<<"ä»·æ ¼:"<<price<<"\n"<<"é¡µæ•°"<<page<<endl;
 }
 string EBook::GetName()
 {
@@ -128,7 +328,7 @@ string EBook::GetName()
 }
 
 
-//ÓÉÍ¼Êé»ùÀàÅÉÉúµÄµúÆ¬
+//ç”±å›¾ä¹¦åŸºç±»æ´¾ç”Ÿçš„ç¢Ÿç‰‡
 class Disc:public Book
 {	
     public:
@@ -140,13 +340,13 @@ class Disc:public Book
 };
 void Disc::Display()
 {
-	cout<<"µúÆ¬Àà"<<endl;
-	cout<<"µúÆ¬Ãû×Ö:"<<name<<endl;
+	cout<<"ç¢Ÿç‰‡ç±»"<<endl;
+	cout<<"ç¢Ÿç‰‡åå­—:"<<name<<endl;
 }
 
 
 
-//»ù±¾Í¼ÊéÀàµÄÉùÃ÷
+//åŸºæœ¬å›¾ä¹¦ç±»çš„å£°æ˜
 void Book::setIsbn(long is)
 {
 	isbn=is;
@@ -173,8 +373,8 @@ void Book::Revise(string na,string pu,long is,float pr,int pa)
 }
 void Book::Display()
 {
-	cout<<"»ù±¾Í¼ÊéÀà"<<endl;
-	cout<<"Í¼ÊéµÄÃû³ÆÊÇ:"<<name<<"\n"<<"Í¼ÊéµÄ³ö°æÉç:"<<publisher<<"\n"<<"Í¼ÊéisbnºÅÎª:"<<isbn<<"\n"<<"Í¼Êé¼Û¸ñ:"<<price<<"\n"<<"Í¼ÊéµÄÒ³Êı:"<<page<<endl;
+	cout<<"åŸºæœ¬å›¾ä¹¦ç±»"<<endl;
+	cout<<"å›¾ä¹¦çš„åç§°æ˜¯:"<<name<<"\n"<<"å›¾ä¹¦çš„å‡ºç‰ˆç¤¾:"<<publisher<<"\n"<<"å›¾ä¹¦isbnå·ä¸º:"<<isbn<<"\n"<<"å›¾ä¹¦ä»·æ ¼:"<<price<<"\n"<<"å›¾ä¹¦çš„é¡µæ•°:"<<page<<endl;
 }
 string Book::GetName()
 {
@@ -209,26 +409,20 @@ void Book::Revise(string na,string pu,float pr,int pa)
 }
 
 
-
-//Ñ§ÉúÀàµÄÉùÃ÷
+//å­¦ç”Ÿç±»çš„å£°æ˜
 void Student::Displ()
 {
-	cout<<"Ñ§ÉúĞÕÃû:"<<name<<"\n"<<"Ñ§ÉúÑ§ºÅ:"<<id<<endl; 
-}
-Student::Student()
-{
-	name="Ğ¡Ã÷";
-	id=0001;
+	cout<<"å­¦ç”Ÿå§“å:"<<name<<"\n"<<"å­¦ç”Ÿå­¦å·:"<<id<<"\n"<<"å­¦ç”Ÿæ€§åˆ«:"<<sex<<endl; 
 }
 void Student::Borrow(Book bo[])
 {
-	string bona;//ÊäÈëµÄÍ¼ÊéÃû 
-	int x=0;//ÅĞ¶ÏÊÇ·ñÕÒµ½Í¼Êé 
-	char answer;//ÊÇ·ñ¼ÌĞø½èÊé 
+	string bona;//è¾“å…¥çš„å›¾ä¹¦å 
+	int x=0;//åˆ¤æ–­æ˜¯å¦æ‰¾åˆ°å›¾ä¹¦ 
+	char answer;//æ˜¯å¦ç»§ç»­å€Ÿä¹¦ 
 	for(int k=0;;k++)
 	{
 		x=0; 
-		cout<<"ÇëÊäÈëÏëÒª½èÊéµÄÊéÃû:"<<endl;
+		cout<<"è¯·è¾“å…¥æƒ³è¦å€Ÿä¹¦çš„ä¹¦å:"<<endl;
 		cin>>bona;
 		for(int i=0;i<=3;i++)
 		{
@@ -237,36 +431,44 @@ void Student::Borrow(Book bo[])
 			{
 				if(bo[i].flag==1)
 				{
-				   cout<<"ÄãÒÔ½èµ½Í¼ÊéĞÅÏ¢Îª:"<<endl;
+				   cout<<"ä½ ä»¥å€Ÿåˆ°å›¾ä¹¦ä¿¡æ¯ä¸º:"<<endl;
 		     	   bo[i].Display();
 		     	   bo[i].flag=0;
 		     	   break;
 				}
 				else
-					cout<<"´ËÍ¼ÊéÒÑ¾­±»½è³ö"<<endl;
+					cout<<"æ­¤å›¾ä¹¦å·²ç»è¢«å€Ÿå‡º"<<endl;
 				
 			} 
 		}
 		if(x==3)
 		{
-			cout<<"Ã»ÓĞÕÒµ½´Ë±¾Êé"<<endl;
+			cout<<"æ²¡æœ‰æ‰¾åˆ°æ­¤æœ¬ä¹¦"<<endl;
 		}
-		cout<<"ÊÇ·ñ¼ÌĞø½èÊé(y/n)"<<endl;
+		cout<<"æ˜¯å¦ç»§ç»­å€Ÿä¹¦(y/n)"<<endl;
 		cin>>answer;
 		if(answer=='n')
 		break;
 	}
 }
+void Student::Revise(string name,string sex,long id)
+{
+	this->name=name;
+	this->sex=sex;
+	this->id=id;
+}
 
 
 
 
-//Í¼Êé¹ÜÀíÀàµÄÉùÃ÷
+
+
+//å›¾ä¹¦ç®¡ç†ç±»çš„å£°æ˜
 BookManger::BookManger()
 {
 	Number=0;
 }
-//Ìí¼ÓÍ¼Êé
+//æ·»åŠ å›¾ä¹¦
 void BookManger::addBook()
 {
 	int choose;
@@ -276,35 +478,35 @@ void BookManger::addBook()
     long is;
 	float pr;
 	int pa;
-    cout<<"-------------------------Ìí¼ÓÍ¼ÊéÏµÍ³--------------------------"<<endl;
-	cout<<"ÇëÊäÈëÌí¼ÓÍ¼ÊéµÄ±¾Êı:";
+    cout<<"-------------------------æ·»åŠ å›¾ä¹¦ç³»ç»Ÿ--------------------------"<<endl;
+	cout<<"è¯·è¾“å…¥æ·»åŠ å›¾ä¹¦çš„æœ¬æ•°:";
 	cin>>a;
 	for(int i=Number;i<a+Number;i++)
 	{
-        cout<<"ÇëÑ¡ÔñÊäÈëÍ¼ÊéµÄÀàĞÍ:"<<"\n"<<"0-Ö½ÖÊÍ¼Êé  1-µç×ÓÍ¼Êé  2-¹âµú"<<endl; 
+        cout<<"è¯·é€‰æ‹©è¾“å…¥å›¾ä¹¦çš„ç±»å‹:"<<"\n"<<"0-çº¸è´¨å›¾ä¹¦  1-ç”µå­å›¾ä¹¦  2-å…‰ç¢Ÿ"<<endl; 
 		cin>>choose;
 		switch(choose)
 		{
 			case 0:
 				bo[i]=new Book();
-				cout<<"ÇëÊäÈëÍ¼ÊéµÄÃû×Ö,³ö°æÉç,isbn,¼Û¸ñ,Ò³Êı:";
+				cout<<"è¯·è¾“å…¥å›¾ä¹¦çš„åå­—,å‡ºç‰ˆç¤¾,isbn,ä»·æ ¼,é¡µæ•°:";
                 cin>>na>>pul>>is>>pr>>pa;
 				bo[i]->Revise(na,pul,is,pr,pa);
 				break;
 			case 1:
                 bo[i]=new EBook();
-                cout<<"ÇëÊäÈëÍ¼ÊéµÄÃû×Ö,×÷Õß,¼Û¸ñ,Ò³Êı:"<<endl;
+                cout<<"è¯·è¾“å…¥å›¾ä¹¦çš„åå­—,ä½œè€…,ä»·æ ¼,é¡µæ•°:"<<endl;
                 cin>>na>>pul>>pr>>pa;
                 bo[i]->Revise(na,pul,pr,pa);
 				break;
 			case 2:
                 bo[i]=new Disc();
-				cout<<"ÇëÊäÈëµúÆ¬Ãû:"<<endl;
+				cout<<"è¯·è¾“å…¥ç¢Ÿç‰‡å:"<<endl;
 				cin>>na;
 				bo[i]->setName(na);
 				break;
 			default:
-				cout<<"ÊäÈë´íÎó!"<<endl;
+				cout<<"è¾“å…¥é”™è¯¯!"<<endl;
 				break;
 			
 		}
@@ -313,12 +515,12 @@ void BookManger::addBook()
     system("pause");
     system("cls");
 }
-//ÏÔÊ¾Í¼Êé
+//æ˜¾ç¤ºå›¾ä¹¦
 void BookManger::showBook()
 {
 	for(int i=0;i<Number;i++)
 	{
-		cout<<"-----------------µÚ"<<i<<"±¾µÄÍ¼Êé------------------"<<endl;
+		cout<<"-----------------ç¬¬"<<i<<"æœ¬çš„å›¾ä¹¦------------------"<<endl;
 		if(bo[i]->flag==1)
 		{
 			bo[i]->Display();
@@ -328,20 +530,20 @@ void BookManger::showBook()
     system("pause");
     system("cls");
  }
-//É¾³ıÍ¼Êé
+//åˆ é™¤å›¾ä¹¦
 void BookManger::delBook()
 {
 	string name;
 	int x=0;
-    cout<<"-------------------------É¾³ıÍ¼ÊéÏµÍ³--------------------------"<<endl;
-	cout<<"ÇëÊäÈëÒªÉ¾³ıÍ¼ÊéµÄÊéÃû:";
+    cout<<"-------------------------åˆ é™¤å›¾ä¹¦ç³»ç»Ÿ--------------------------"<<endl;
+	cout<<"è¯·è¾“å…¥è¦åˆ é™¤å›¾ä¹¦çš„ä¹¦å:";
 	cin>>name;
 	for(int i=0;i<Number;i++)
 	{
 		if(name==bo[i]->GetName())
 		{
 			char answer;
-			cout<<"È·ÈÏÊÇ·ñ¼ÌĞøÉ¾³ı(y/n):";
+			cout<<"ç¡®è®¤æ˜¯å¦ç»§ç»­åˆ é™¤(y/n):";
 			cin>>answer;
 			if(answer=='y')
 			{
@@ -351,12 +553,12 @@ void BookManger::delBook()
 						bo[j]=bo[j+1];			
 				}
 				Number--;
-				cout<<"------------É¾³ı³É¹¦-------------"<<endl;
+				cout<<"------------åˆ é™¤æˆåŠŸ-------------"<<endl;
 				break;
 			}
 			else
 			{
-				cout<<"ÍË³ö"<<endl; 
+				cout<<"é€€å‡º"<<endl; 
 				break;
 			}
 		}
@@ -364,12 +566,12 @@ void BookManger::delBook()
 	}
 	if(x==Number)
 	{
-		cout<<"--------------É¾³ıÊ§°Ü-------------"<<endl;
+		cout<<"--------------åˆ é™¤å¤±è´¥-------------"<<endl;
 	}
     system("pause");
     system("cls");
 }
-//ĞŞ¸ÄÍ¼Êé
+//ä¿®æ”¹å›¾ä¹¦
 void BookManger::reBook()
 {
 	string na,pu;
@@ -377,103 +579,103 @@ void BookManger::reBook()
 	int pa,k;
 	long is;
 	char ans;
-	cout<<"-------------------------ĞŞ¸ÄÍ¼ÊéÏµÍ³--------------------------"<<endl;
-	cout<<"ÇëÊäÈëÏëÒªĞŞ¸ÄÍ¼ÊéµÄÃû×Ö:"<<endl;
+	cout<<"-------------------------ä¿®æ”¹å›¾ä¹¦ç³»ç»Ÿ--------------------------"<<endl;
+	cout<<"è¯·è¾“å…¥æƒ³è¦ä¿®æ”¹å›¾ä¹¦çš„åå­—:"<<endl;
 	cin>>na;
 	for(int i=0;i<Number;i++)
 	{
 		if(na==bo[i]->GetName())
 		{
-			cout<<"ÕÒµ½Í¼Êé,È·ÈÏÊÇ·ñ¼ÌĞøĞŞ¸Ä(y/n)"<<endl;
+			cout<<"æ‰¾åˆ°å›¾ä¹¦,ç¡®è®¤æ˜¯å¦ç»§ç»­ä¿®æ”¹(y/n)"<<endl;
 			cin>>ans;
 			if(ans=='y')
 			{
-				cout<<"Í¼ÊéµÄĞÅÏ¢:"<<endl;
+				cout<<"å›¾ä¹¦çš„ä¿¡æ¯:"<<endl;
 				bo[i]->Display();
-				cout<<"ÇëÑ¡ÔñÏëÒªĞŞ¸ÄÍ¼ÊéµÄĞÅÏ¢:"<<endl;
+				cout<<"è¯·é€‰æ‹©æƒ³è¦ä¿®æ”¹å›¾ä¹¦çš„ä¿¡æ¯:"<<endl;
 				if(bo[i]->Kind==0)
 				{
-					cout<<"ÇëÑ¡Ôñ²Ù×÷:"<<endl;
-					cout<<"0-ĞŞ¸ÄÊéÃû  1-ĞŞ¸Ä³ö°æÉç  2-ĞŞ¸Ä¼Û¸ñ  3-ĞŞ¸ÄÒ³Êı  4-ĞŞ¸Äisbn"<<endl;
+					cout<<"è¯·é€‰æ‹©æ“ä½œ:"<<endl;
+					cout<<"0-ä¿®æ”¹ä¹¦å  1-ä¿®æ”¹å‡ºç‰ˆç¤¾  2-ä¿®æ”¹ä»·æ ¼  3-ä¿®æ”¹é¡µæ•°  4-ä¿®æ”¹isbn"<<endl;
 					cin>>k;
 					switch(k)
 					{
 						case 0:
-							cout<<"ÇëÊäÈëĞÂÊéÃû:"<<endl;
+							cout<<"è¯·è¾“å…¥æ–°ä¹¦å:"<<endl;
 							cin>>na;
 							bo[i]->setName(na);
 							break;
 						case 1:
-							cout<<"ÇëÊäÈëĞÂ³ö°æÉç:"<<endl;
+							cout<<"è¯·è¾“å…¥æ–°å‡ºç‰ˆç¤¾:"<<endl;
 							cin>>pu;
 							bo[i]->setPu(pu);
 							break;
 						case 2:
-							cout<<"ÇëÊäÈëĞÂ¼Û¸ñ:"<<endl;
+							cout<<"è¯·è¾“å…¥æ–°ä»·æ ¼:"<<endl;
 							cin>>pr;
 							bo[i]->setPrice(pr);
 							break;
 						case 3:
-							cout<<"ÇëÊäÈëĞÂÒ³Êı:"<<endl;
+							cout<<"è¯·è¾“å…¥æ–°é¡µæ•°:"<<endl;
 							cin>>pa;
 							bo[i]->setPage(pa);
 							break;
 						case 4:
-							cout<<"ÇëÊäÈëĞÂisbn:"<<endl;
+							cout<<"è¯·è¾“å…¥æ–°isbn:"<<endl;
 							cin>>is;
 							bo[i]->setIsbn(is);
 							break;
 						default:
-							cout<<"ÊäÈë´íÎó!"<<endl;
+							cout<<"è¾“å…¥é”™è¯¯!"<<endl;
 							break;
 					}
 				}
 				else if(bo[i]->Kind==1)
 				{
-					cout<<"ÇëÑ¡Ôñ²Ù×÷:"<<endl;
-					cout<<"0-ĞŞ¸ÄÊéÃû  1-ĞŞ¸Ä×÷Õß  2-ĞŞ¸Ä¼Û¸ñ  3-ĞŞ¸ÄÒ³Êı  "<<endl;
+					cout<<"è¯·é€‰æ‹©æ“ä½œ:"<<endl;
+					cout<<"0-ä¿®æ”¹ä¹¦å  1-ä¿®æ”¹ä½œè€…  2-ä¿®æ”¹ä»·æ ¼  3-ä¿®æ”¹é¡µæ•°  "<<endl;
 					cin>>k;
 					switch(k)
 					{
 						case 0:
-							cout<<"ÇëÊäÈëĞÂÊéÃû:"<<endl;
+							cout<<"è¯·è¾“å…¥æ–°ä¹¦å:"<<endl;
 							cin>>na;
 							bo[i]->setName(na);
 							break;
 						case 1:
-							cout<<"ÇëÊäÈëĞÂ×÷Õß:"<<endl;
+							cout<<"è¯·è¾“å…¥æ–°ä½œè€…:"<<endl;
 							cin>>pu;
 							bo[i]->setPu(pu);
 							break;
 						case 2:
-							cout<<"ÇëÊäÈëĞÂ¼Û¸ñ:"<<endl;
+							cout<<"è¯·è¾“å…¥æ–°ä»·æ ¼:"<<endl;
 							cin>>pr;
 							bo[i]->setPrice(pr);
 							break;
 						case 3:
-							cout<<"ÇëÊäÈëĞÂÒ³Êı:"<<endl;
+							cout<<"è¯·è¾“å…¥æ–°é¡µæ•°:"<<endl;
 							cin>>pa;
 							bo[i]->setPage(pa);
 							break;
 						default:
-							cout<<"ÊäÈë´íÎó!"<<endl;
+							cout<<"è¾“å…¥é”™è¯¯!"<<endl;
 							break;
 					}	
 				}
 				else
 				{
-					cout<<"ÇëÑ¡Ôñ²Ù×÷:"<<endl;
-					cout<<"0-ĞŞ¸ÄµúÆ¬Ãû×Ö"<<endl;
+					cout<<"è¯·é€‰æ‹©æ“ä½œ:"<<endl;
+					cout<<"0-ä¿®æ”¹ç¢Ÿç‰‡åå­—"<<endl;
 					cin>>k;
 					switch(k)
 					{
 						case 0:
-							cout<<"ÇëÊäÈëĞÂÆ¬Ãû:"<<endl;
+							cout<<"è¯·è¾“å…¥æ–°ç‰‡å:"<<endl;
 							cin>>na;
 							bo[i]->setName(na);
 							break;
 						default:
-							cout<<"ÊäÈë´íÎó,ÆäËû¹¦ÄÜ´ı¿ª·¢!"<<endl;
+							cout<<"è¾“å…¥é”™è¯¯,å…¶ä»–åŠŸèƒ½å¾…å¼€å‘!"<<endl;
 							break;
 					}
 				}
@@ -484,45 +686,47 @@ void BookManger::reBook()
 	system("pause");
 	system("cls");
 }
-//Ñ°ÕÒÍ¼Êé
+//å¯»æ‰¾å›¾ä¹¦
 void BookManger::findBook()
 {
 	string name;
 	int x=0;
-    cout<<"-------------------------Ñ°ÕÒÍ¼ÊéÏµÍ³--------------------------"<<endl;
-	cout<<"ÇëÊäÈëÏëÒª²éÕÒµÄÍ¼ÊéµÄÊéÃû:"<<endl;
+    cout<<"-------------------------å¯»æ‰¾å›¾ä¹¦ç³»ç»Ÿ--------------------------"<<endl;
+	cout<<"è¯·è¾“å…¥æƒ³è¦æŸ¥æ‰¾çš„å›¾ä¹¦çš„ä¹¦å:"<<endl;
 	cin>>name;
 	for(int i=0;i<Number;i++)
 	{
 		if(name==bo[i]->GetName())
 		{
-			cout<<"---------²éÕÒ³É¹¦---------"<<endl;
+			cout<<"---------æŸ¥æ‰¾æˆåŠŸ---------"<<endl;
 			bo[i]->Display();	
 			break;
 		}
 		x++;
 	}
 	if(x==Number)
-		cout<<"------------²éÕÒÊ§°Ü---------"<<endl; 
+		cout<<"------------æŸ¥æ‰¾å¤±è´¥---------"<<endl; 
     system("pause");
     system("cls");
 }
-//¹ÜÀíÍ¼ÊéÀàµÄ½çÃæ
-void menu(BookManger one)
+//ç®¡ç†å›¾ä¹¦ç±»çš„ç•Œé¢
+void menu1(StudentManger stu1,BookManger bo1);
+void menu2(BookManger bo1,StudentManger stu1)
 {
     int k;
     while(1)
     {
-        cout<<"_______________________________Í¼Êé¹ÜÀíÏµÍ³_________________________________"<<endl;
-        cout<<"                           ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª                            "<<endl;
-        cout<<"                           -¡¾0¡¿ÍË³öÏµÍ³      -                            "<<endl;
-        cout<<"                           -¡¾1¡¿É¾³ıÍ¼Êé      -                            "<<endl;
-        cout<<"                           -¡¾2¡¿Ñ°ÕÒÍ¼Êé      -                            "<<endl;
-        cout<<"                           -¡¾3¡¿Ìí¼ÓÍ¼Êé      -                            "<<endl;
-        cout<<"                           -¡¾4¡¿ÏÔÊ¾Í¼Êé      -                            "<<endl;
-        cout<<"                           -¡¾5¡¿ĞŞ¸ÄÍ¼Êé      -                            "<<endl;
-        cout<<"                           ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª                            "<<endl;
-        cout<<"ÇëÑ¡Ôñ²Ù×÷:"<<endl;
+        cout<<"_______________________________å›¾ä¹¦ç®¡ç†ç³»ç»Ÿ_________________________________"<<endl;
+        cout<<"                           â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”                            "<<endl;
+        cout<<"                           -ã€0ã€‘é€€å‡ºç³»ç»Ÿ      -                            "<<endl;
+        cout<<"                           -ã€1ã€‘åˆ é™¤å›¾ä¹¦      -                            "<<endl;
+        cout<<"                           -ã€2ã€‘å¯»æ‰¾å›¾ä¹¦      -                            "<<endl;
+        cout<<"                           -ã€3ã€‘æ·»åŠ å›¾ä¹¦      -                            "<<endl;
+        cout<<"                           -ã€4ã€‘æ˜¾ç¤ºå›¾ä¹¦      -                            "<<endl;
+        cout<<"                           -ã€5ã€‘ä¿®æ”¹å›¾ä¹¦      -                            "<<endl;
+		cout<<"                           -ã€6ã€‘åˆ‡æ¢ç³»ç»Ÿ      -                            "<<endl;
+        cout<<"                           â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”                            "<<endl;
+        cout<<"è¯·é€‰æ‹©æ“ä½œ:"<<endl;
         cin>>k;
         switch(k)
         {
@@ -531,35 +735,125 @@ void menu(BookManger one)
                 break;
             case 1:
                 system("cls");
-                one.delBook();
+                bo1.delBook();
                 break;
             case 2:
                 system("cls");
-                one.findBook();
+                bo1.findBook();
                 break;
             case 3:
                 system("cls");
-                one.addBook();
+                bo1.addBook();
                 break;
             case 4:
                 system("cls");
-                one.showBook();
+                bo1.showBook();
                 break;
             case 5:
                  system("cls");
-                 one.reBook();
+                 bo1.reBook();
                  break;
+			case 6:
+				 system("cls");
+				 menu1(stu1,bo1);
             default:
-                cout<<"ÊäÈë´íÎó"<<endl;
+                cout<<"è¾“å…¥é”™è¯¯"<<endl;
                 system("pause");
                 system("cls");
         }
     }
 }
+void menu1(StudentManger stu1,BookManger bo1)
+{
+	int k;
+    while(1)
+    {
+        cout<<"_______________________________å­¦ç”Ÿç®¡ç†ç³»ç»Ÿ_________________________________"<<endl;
+        cout<<"                           â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”                            "<<endl;
+        cout<<"                           -ã€0ã€‘é€€å‡ºç³»ç»Ÿ      -                            "<<endl;
+        cout<<"                           -ã€1ã€‘åˆ é™¤å­¦ç”Ÿ      -                            "<<endl;
+        cout<<"                           -ã€2ã€‘å¯»æ‰¾å­¦ç”Ÿ      -                            "<<endl;
+        cout<<"                           -ã€3ã€‘æ·»åŠ å­¦ç”Ÿ      -                            "<<endl;
+        cout<<"                           -ã€4ã€‘æ˜¾ç¤ºå­¦ç”Ÿ      -                            "<<endl;
+        cout<<"                           -ã€5ã€‘ä¿®æ”¹å­¦ç”Ÿ      -                            "<<endl;
+		cout<<"                           -ã€6ã€‘åˆ‡æ¢ç³»ç»Ÿ      -                            "<<endl;
+        cout<<"                           â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”                            "<<endl;
+        cout<<"è¯·é€‰æ‹©æ“ä½œ:"<<endl;
+        cin>>k;
+        switch(k)
+        {
+            case 0:
+                exit(0);
+                break;
+            case 1:
+                system("cls");
+                stu1.delStudent();
+                break;
+            case 2:
+                system("cls");
+                stu1.findStudent();
+                break;
+            case 3:
+                system("cls");
+                stu1.addStudent();
+                break;
+            case 4:
+                system("cls");
+                stu1.showStuent();
+                break;
+            case 5:
+                 system("cls");
+                 stu1.reStudent();
+                 break;
+			case 6:
+				system("cls");
+				menu2(bo1,stu1);
+            default:
+                cout<<"è¾“å…¥é”™è¯¯"<<endl;
+                system("pause");
+                system("cls");
+        }
+    }
+}
+void menu(BookManger bo1,StudentManger stu1)
+{
+	
+	int k;
+	while(1)
+	{
+		cout<<setw(25)<<cout.fill('-')<<"å›¾ä¹¦ç³»ç»Ÿ"<<setw(25)<<cout.fill('-')<<endl;
+		cout<<setw(20)<<cout.fill(' ')<<"ã€0ã€‘é€€å‡º"<<setw(20)<<cout.fill(' ')<<endl;
+		cout<<setw(20)<<cout.fill(' ')<<"ã€1ã€‘å­¦ç”Ÿç®¡ç†ç³»ç»Ÿ"<<setw(20)<<cout.fill(' ')<<endl;
+		cout<<setw(20)<<cout.fill(' ')<<"ã€2ã€‘å›¾ä¹¦ç®¡ç†ç³»ç»Ÿ"<<setw(20)<<cout.fill(' ')<<endl;
+		cout<<"è¯·é€‰æ‹©æ“ä½œ:"<<endl;
+        cin>>k;
+        switch(k)
+        {
+            case 0:
+                exit(0);
+                break;
+            case 1:
+                system("cls");
+                menu1(stu1,bo1);
+                break;
+			case 2:
+                system("cls");
+                menu2(bo1,stu1);
+                break;
+			default:
+                cout<<"è¾“å…¥é”™è¯¯"<<endl;
+                system("pause");
+                system("cls");
+		}
+	}
+
+}
+
 int main(int argc, char** argv)
 {
 	Book *bo[100];
-	BookManger one;
-    menu(one);
+	BookManger bo1;
+    StudentManger stu1;
+	menu(bo1,stu1);
 	return 0;
 }
